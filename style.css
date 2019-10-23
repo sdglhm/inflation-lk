@@ -1,12 +1,12 @@
 body{
     background: url('images/subway-lines.png');
-    background-size: 400px;
+    background-size: 420px;
 
     color: #444444;
 
 
     
-    font-family: 'Karla', sans-serif;
+    font-family:font-family: 'Roboto', sans-serif;
 }
 
 .highlight{
@@ -48,7 +48,7 @@ h2{
     padding: 20px;
     margin: 5px;
     border-radius: 4px;
-    margin-top: 30px;
+    margin-top: 32px;
 }
 
 .read-more{
