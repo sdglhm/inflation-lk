@@ -1,79 +1,372 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="style.css">
-    <meta property="og:image" content="https://sdglhm.github.io/inflation-lk/images/Calculate-Inflation-Sri-Lanka.png" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <meta property="og:image" content="https://sdglhm.github.io/inflation-lk/images/Calculate-Inflation-Sri-Lanka.png" />
+  <link href="https://fonts.googleapis.com/css?family=Karla|Rubik&display=swap" rel="stylesheet">
+  <title>Sri Lanka Inflation Calculator</title>
+  <style>
+    :root { --bg:#fafafa; --text:#222; --muted:#6b7280; --brand:#0ea5e9; --card:#fff; --border:#e5e7eb; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: Karla, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif; color:var(--text); background:var(--bg); }
+    .container { max-width: 1100px; margin: 0 auto; padding: 24px; display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
+    @media (max-width: 900px) { .container { grid-template-columns: 1fr; } }
+    .grid-8, .grid-4 { min-width:0; }
+    .card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:24px; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+    h2 { font-family: Rubik, Karla, sans-serif; margin:0 0 12px; font-size: 1.5rem; }
+    .highlight { color: var(--brand); }
+    .form { display:grid; gap:14px; margin: 14px 0 10px; }
+    .form-group, .from-group { display:flex; flex-direction:column; gap:6px; }
+    label { font-weight:600; font-size:.95rem; }
+    input[type="number"], input[type="text"], select {
+      font-size: 1rem; padding:10px 12px; border:1px solid var(--border); border-radius:10px; background:#fff; outline:none;
+    }
+    input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(14,165,233,.15); }
+    .inflation-output { background:#f8fafc; border:1px dashed var(--border); border-radius:12px; padding:16px; margin-top:10px; }
+    h3 { margin:0; font-weight:600; font-size:1.05rem; line-height:1.5; }
+    p { color: var(--text); }
+    .muted { color: var(--muted); }
+    .badge { display:inline-block; padding:2px 8px; border-radius:999px; background:#eef6ff; color:#0369a1; font-size:.8rem; border:1px solid #dbeafe; margin-left:6px;}
+    .error { color:#b91c1c; background:#fef2f2; border:1px solid #fee2e2; padding:10px 12px; border-radius:10px; margin-top:10px; display:none; }
+    footer { text-align:center; padding:24px; color:var(--muted); font-size:.9rem;}
 
-    <link href="https://fonts.googleapis.com/css?family=Karla|Rubik&display=swap" rel="stylesheet">
-
-    <title>Sri Lanka Inflation Calculator - Inflation details from 1960 to 2016</title>
+    /* Basket styles (separate box) */
+    .basket { margin-top:0; }
+    .basket h3 { margin: 0 0 8px; font-size:1.25rem; }
+    .basket small { color: var(--muted); }
+    .basket-grid { display:grid; gap:10px; margin-top:12px; }
+    .basket-row {
+      display:grid; grid-template-columns: 1fr 1fr; gap:12px; align-items:center;
+      padding:10px; border:1px solid var(--border); border-radius:10px; background:#fff;
+    }
+    .basket-left { display:flex; align-items:center; gap:10px; }
+    .basket-emoji { font-size: 1.25rem; }
+    .basket-title { font-weight:600; }
+    .basket-right { display:grid; grid-template-columns: 1fr auto; gap:10px; align-items:center; }
+    .price-input input { width:100%; }
+    .price-view { font-variant-numeric: tabular-nums; padding:8px 10px; background:#f3f4f6; border-radius:8px; min-width:120px; text-align:right; }
+    .basket-footnote { color: var(--muted); font-size:.85rem; margin-top:10px; }
+    .source a { color: var(--brand); text-decoration: none; }
+    .basket-actions { display:flex; gap:10px; margin-top:10px; }
+    .btn { border:1px solid var(--border); background:#fff; padding:8px 12px; border-radius:10px; cursor:pointer; }
+    .btn:hover { border-color: var(--brand); }
+    .sources { margin-top:10px; font-size:.9rem; color: var(--muted); }
+    .sources a { color: var(--brand); }
+    .mt-5 { margin-top: 1rem;}
+  </style>
 </head>
-
 <body>
+  <noscript>
     <div class="container">
-        <div class="grid-8">
-            <!-- Sample products -->
+      <div class="grid-4">
+        <div class="card">
+          <strong>JavaScript required:</strong> This page needs JavaScript to fetch CPI data and calculate inflation.
         </div>
-        <div class="grid-4">
-            <!-- Calculation -->
-            <div class="calculator">
-                <h2>
-                    Calculate inflation in <span class="highlight">Sri Lanka</span>
-                </h2>
-
-                <div class="form">
-                    <div class="form-group">
-                        <label for="">Amount</label>
-                        <input type="text" id="amount_id" name="amount_id">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="">Spent at</label>
-                        <select name="year_from" id="year_from_id">
-                        </select>
-                    </div>
-
-                    <div class="from-group">
-                        <label for="">Cost at</label>
-                        <select name="year_to" id="year_to_id">
-
-                        </select>
-                    </div>
-
-
-
-                </div>
-
-                <div class="inflation-output">
-                    <h3>
-                        Adjusted for inflation, <span id="amount_cals">10,000.00</span> LKR item in year
-                        <span id="from_year_note">1960</span> would cost <span id="amount_cals_done">10,000.00</span> LKR in year <span id="to_year_note">1960</span>
-                    </h3>
-                </div>
-                <p>
-                    Inflation is a quantitative measure of the rate at which the average price level of a basket of
-                    selected goods and services in an economy increases over a period of time.
-                </p>
-                <span class="read-more">
-                    Read more - <a
-                        href="https://www.investopedia.com/terms/i/inflation.asp">https://www.investopedia.com/terms/i/inflation.asp</a>
-                </span>
-                * Please send a PR/open issue if you find any data to be wrong
-                <hr>
-<a class="github-button" href="https://github.com/sdglhm/inflation-lk/issues" data-icon="octicon-issue-opened" data-size="large" data-show-count="true" aria-label="Issue sdglhm/inflation-lk on GitHub">Issue</a>
-<a class="github-button" href="https://github.com/sdglhm/inflation-lk/fork" data-icon="octicon-repo-forked" data-size="large" data-show-count="true" aria-label="Fork sdglhm/inflation-lk on GitHub">Fork</a>
-<a class="github-button" href="https://github.com/sdglhm" data-size="large" data-show-count="true" aria-label="Follow @sdglhm on GitHub">Follow @sdglhm</a>
-            </div>
-        </div>
+      </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
-    <script src="application.js"></script>
-    
-    <script async defer src="https://buttons.github.io/buttons.js"></script>
-</body>
+  </noscript>
 
+  <div class="container">
+    <div class="grid-8">
+      <!-- Everyday Basket (separate box) -->
+      <div class="card basket" id="basket_card">
+        <h3>Everyday basket (anchored to 2024 prices)</h3>
+        <small class="muted">
+          Inputs show the item’s price in the selected <strong>Spent at</strong> year, auto-derived from a 2024 anchor.
+          Change a value to override. We then show the CPI-adjusted equivalent in the <strong>Cost at</strong> year.
+        </small>
+
+        <div class="basket-grid" id="basket_rows"></div>
+
+        <div class="basket-actions">
+          <button class="btn" id="reset_basket">↺ Reset to 2024-based prices</button>
+        </div>
+
+        <div class="basket-footnote">📝 CPI-based equivalents for illustration—real shop prices vary by brand/location and promotions.</div>
+
+        <div class="sources">
+          <strong>2024 anchor prices & sources:</strong>
+          <ul>
+            <li>🍞 Bread 750 g: LKR 390 — Keells Sandwich Bread 750g. <a href="https://keellssuper.com/productDetail?KEELLS_SANDWICH_BREAD_750G=&itemcode=951010" rel="noopener">Source</a></li>
+            <li>🍚 Rice 1 kg: LKR 520 — CIC Kuruluthuda 1kg. <a href="https://keellssuper.com/productDetail?CIC_KURULUTHUDA_RICE_1KG=&itemcode=120767" rel="noopener">Source</a></li>
+            <li>🥛 Milk 1 L: LKR 500 — Ambewela/Kotmale UHT 1L. <a href="https://keellssuper.com/productDetail?AMBEWELA_UHT_MILK_1L=&itemcode=13698" rel="noopener">Ambewela</a>, <a href="https://keellssuper.com/productDetail?KOTMALE_FULL_CREAM_PLAIN_MILK_1L=&itemcode=111459" rel="noopener">Kotmale</a></li>
+            <li>🥚 Eggs (dozen): ≈ LKR 564 — Keells 10-pack LKR 470 → scaled to 12. <a href="https://keellssuper.com/productDetail?HAPPY_HEN_MEDIUM_EGGS_10S=&itemcode=120107" rel="noopener">Source</a></li>
+            <li>🚌 City bus minimum fare: LKR 27 — effective Oct 1, 2024. <a href="https://www.adaderana.lk/news/102377/bus-fares-reduced" rel="noopener">Adaderana</a></li>
+          </ul>
+        </div>
+      </div>
+
+            <!-- About -->
+      <div class="card mt-5">
+        <h2>What this calculator does</h2>
+        <p class="muted">
+          This tool uses the World Bank’s annual CPI series (<em>Consumer price index, 2010=100</em>) for Sri Lanka (1960 → latest available year) to adjust a price across years:
+        </p>
+        <p class="muted"><code>price<sub>toYear</sub> = price<sub>fromYear</sub> × (CPI<sub>toYear</sub> / CPI<sub>fromYear</sub>)</code></p>
+        <p class="muted">
+          It’s best for long-run comparisons. If you need monthly, local indices (CCPI/NCPI, 2021=100), you’ll need a different series and a re-base.
+        </p>
+        <div class="muted">
+          Source: World Bank, <em>Consumer price index (2010=100)</em> (Indicator <strong>FP.CPI.TOTL</strong>), Sri Lanka (LKA). <span id="coverage_badge" class="badge">Loading…</span>
+          &nbsp;|&nbsp;<a class="source" href="https://data.worldbank.org/indicator/FP.CPI.TOTL?locations=LK" rel="noopener">Indicator page</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-4">
+      <!-- Calculator -->
+      <div class="card">
+        <h2>
+          Calculate inflation in <span class="highlight">Sri Lanka</span>
+        </h2>
+
+        <div class="form">
+          <div class="form-group">
+            <label for="amount_id">Amount</label>
+            <input type="number" id="amount_id" name="amount_id" inputmode="decimal" min="0" step="0.01" placeholder="10000">
+          </div>
+
+          <div class="form-group">
+            <label for="year_from_id">Spent at</label>
+            <select name="year_from" id="year_from_id"></select>
+          </div>
+
+          <div class="from-group">
+            <label for="year_to_id">Cost at</label>
+            <select name="year_to" id="year_to_id"></select>
+          </div>
+        </div>
+
+        <div id="error_box" class="error"></div>
+
+        <div class="inflation-output">
+          <h3>
+            Adjusted for inflation, <span id="amount_cals">10,000</span> LKR item in year
+            <span id="from_year_note">1960</span> would cost <span id="amount_cals_done">10,000.00</span> LKR in year <span id="to_year_note">1960</span>.
+          </h3>
+        </div>
+
+        <p class="muted" style="margin-top:10px;">
+          Inflation is a quantitative measure of the rate at which the average price level of a basket of selected goods and services in an economy increases over a period of time.
+        </p>
+        <span class="muted">
+          Read more — <a href="https://www.investopedia.com/terms/i/inflation.asp" rel="noopener" class="source">Investopedia: Inflation</a>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Sri Lanka Inflation Calculator • Uses World Bank CPI (2010=100). Last updated at runtime.
+  </footer>
+
+  <script>
+    (async function () {
+      // --- Config ---
+      const WB_URL = 'https://api.worldbank.org/v2/country/LKA/indicator/FP.CPI.TOTL?format=json&per_page=90';
+      const BASKET_BASE_YEAR = 2024; // Anchor year for "current" prices
+
+      // 2024 anchor prices (from Sri Lankan sources)
+      const basketBase2024 = {
+        bread: 390,  // Keells Sandwich Bread 750g (LKR)
+        rice:  520,  // CIC Kuruluthuda 1kg (LKR)
+        milk:  500,  // Ambewela/Kotmale UHT 1L (LKR)
+        eggs:  564,  // ≈ from 10-pack 470 → 12 eggs
+        bus:   27    // Minimum city bus fare (Oct 1, 2024)
+      };
+
+      // UI elements
+      const amountEl = document.getElementById('amount_id');
+      const fromSel  = document.getElementById('year_from_id');
+      const toSel    = document.getElementById('year_to_id');
+      const outAmt   = document.getElementById('amount_cals');
+      const outFrom  = document.getElementById('from_year_note');
+      const outTo    = document.getElementById('to_year_note');
+      const outRes   = document.getElementById('amount_cals_done');
+      const badge    = document.getElementById('coverage_badge');
+      const errorBox = document.getElementById('error_box');
+
+      const basketRowsEl = document.getElementById('basket_rows');
+      const resetBtn = document.getElementById('reset_basket');
+
+      // Basket schema
+      const basketItems = [
+        { id:'bread', emoji:'🍞', name:'Loaf of bread (750g)' },
+        { id:'rice',  emoji:'🍚', name:'Rice 1 kg' },
+        { id:'milk',  emoji:'🥛', name:'Fresh milk 1 L' },
+        { id:'eggs',  emoji:'🥚', name:'Eggs (dozen)' },
+        { id:'bus',   emoji:'🚌', name:'City bus minimum fare' }
+      ];
+
+      const fmtInt    = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
+      const fmtMoney2 = new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 });
+
+      function showError(msg) { errorBox.style.display='block'; errorBox.textContent=msg; }
+      function clearError() { errorBox.style.display='none'; errorBox.textContent=''; }
+
+      // Fetch CPI
+      let rows = [];
+      try {
+        const res = await fetch(WB_URL);
+        if (!res.ok) throw new Error('Network error: ' + res.status);
+        const json = await res.json();
+        rows = (json[1] || [])
+          .filter(r => r.value != null && /^\d{4}$/.test(r.date))
+          .map(r => ({ Year: Number(r.date), CPI: Number(r.value) }))
+          .sort((a,b) => a.Year - b.Year);
+        if (!rows.length) throw new Error('No CPI values returned');
+      } catch (e) {
+        console.error('Failed to load CPI:', e);
+        showError('Could not load CPI data from the World Bank. Please check your internet connection and reload.');
+        return;
+      }
+
+      // Build lookup & years
+      const cpiByYear = new Map(rows.map(r => [r.Year, r.CPI]));
+      const years = rows.map(r => r.Year);
+      if (!cpiByYear.has(BASKET_BASE_YEAR)) {
+        // If 2024 not present (unlikely), fall back to last year available
+        console.warn('Base year CPI not found; falling back to last available.');
+      }
+      const baseYear = cpiByYear.has(BASKET_BASE_YEAR) ? BASKET_BASE_YEAR : years[years.length-1];
+
+      // Populate selects
+      fromSel.innerHTML = ''; toSel.innerHTML = '';
+      years.forEach(y => { fromSel.add(new Option(y, y)); toSel.add(new Option(y, y)); });
+
+      // Defaults: base year → base year (so inputs match 2024 anchors initially)
+      fromSel.value = String(baseYear);
+      toSel.value   = String(years[years.length - 1]);
+
+      // Update Title & Coverage Badge
+      const firstYear = years[0], lastYear = years[years.length - 1];
+      document.title = `Sri Lanka Inflation Calculator (1960–${lastYear})`;
+      if (badge) badge.textContent = `Coverage: ${firstYear}–${lastYear}`;
+
+      // Basket state (track manual overrides)
+      const inputsById = new Map();   // id -> input element
+      const customById = new Map();   // id -> boolean (user-edited)
+
+      // Render basket rows
+      function renderBasket() {
+        basketRowsEl.innerHTML = '';
+        basketItems.forEach(item => {
+          const row = document.createElement('div');
+          row.className = 'basket-row';
+          row.innerHTML = `
+            <div class="basket-left">
+              <div class="basket-emoji">${item.emoji}</div>
+              <div class="basket-title">${item.name}</div>
+            </div>
+            <div class="basket-right">
+              <div class="price-input">
+                <input type="number" min="0" step="0.01" id="price_${item.id}" placeholder="—">
+              </div>
+              <div class="price-view" id="view_${item.id}">—</div>
+            </div>
+          `;
+          basketRowsEl.appendChild(row);
+          const input = row.querySelector(`#price_${item.id}`);
+          inputsById.set(item.id, input);
+          customById.set(item.id, false);
+          input.addEventListener('input', () => { customById.set(item.id, true); updateBasket(); });
+          input.addEventListener('change', () => { customById.set(item.id, true); updateBasket(); });
+        });
+      }
+
+      // Helper: derive "price in fromYear" from 2024 anchor
+      function derivedFromYearPrice(id, fromYear) {
+        const anchor = basketBase2024[id];
+        if (!Number.isFinite(anchor)) return null;
+        if (!cpiByYear.has(fromYear) || !cpiByYear.has(baseYear)) return null;
+        const factor = cpiByYear.get(fromYear) / cpiByYear.get(baseYear);
+        return anchor * factor;
+        // ex: show 1960 price that would equal 2024 anchor after inflation
+      }
+
+      // Inflate between years
+      function inflationFactor(fromYear, toYear) {
+        if (!cpiByYear.has(fromYear) || !cpiByYear.has(toYear)) return 1;
+        return cpiByYear.get(toYear) / cpiByYear.get(fromYear);
+      }
+
+      // Calculator + Basket
+      function calculate() {
+        clearError();
+        const fromYear = Number(fromSel.value);
+        const toYear   = Number(toSel.value);
+        const amount   = parseFloat(amountEl.value);
+
+        if (!Number.isFinite(amount) || amount < 0) {
+          showError('Please enter a valid amount (e.g., 10000).');
+          return;
+        }
+        if (!cpiByYear.has(fromYear) || !cpiByYear.has(toYear)) {
+          showError('Selected year is not available in CPI data.');
+          return;
+        }
+        if (toYear < fromYear) {
+          showError('“Cost at” year should be greater than or equal to “Spent at” year.');
+          return;
+        }
+
+        outAmt.textContent = fmtInt.format(amount);
+        outFrom.textContent = fromYear;
+        outTo.textContent = toYear;
+
+        const factor = inflationFactor(fromYear, toYear);
+        outRes.textContent = fmtMoney2.format(amount * factor);
+
+        updateBasket(); // keep basket in sync
+      }
+
+      function updateBasket() {
+        const fromYear = Number(fromSel.value);
+        const toYear   = Number(toSel.value);
+        const factor   = inflationFactor(fromYear, toYear);
+
+        basketItems.forEach(item => {
+          const input = inputsById.get(item.id);
+          const view  = document.getElementById(`view_${item.id}`);
+
+          // If user hasn't customized, auto-fill from 2024 anchor → fromYear
+          if (!customById.get(item.id)) {
+            const auto = derivedFromYearPrice(item.id, fromYear);
+            input.value = Number.isFinite(auto) ? auto.toFixed(2) : '';
+          }
+
+          const base = parseFloat(input.value);
+          if (!Number.isFinite(base) || base < 0) {
+            view.textContent = '—';
+          } else {
+            view.textContent = `${fmtMoney2.format(base * factor)} LKR`;
+          }
+        });
+      }
+
+      function resetBasket() {
+        customById.forEach((_, id) => customById.set(id, false));
+        updateBasket();
+      }
+
+      // Wire events
+      ['input','change'].forEach(ev => amountEl.addEventListener(ev, calculate));
+      fromSel.addEventListener('change', () => { // when from-year changes, only auto-update non-custom rows
+        updateBasket();
+        calculate();
+      });
+      toSel.addEventListener('change', calculate);
+      resetBtn.addEventListener('click', resetBasket);
+
+      // Initial state
+      renderBasket();
+      amountEl.value = amountEl.value || '10000';
+      updateBasket();
+      calculate();
+    })();
+  </script>
+</body>
 </html>
+
